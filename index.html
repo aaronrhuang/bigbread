@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Baguette Friend</title>
+<title>Big Bread</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -26,18 +26,10 @@
     gap: 24px;
   }
 
-  .message {
-    font-size: 1.6rem;
-    color: #c4943a;
-    font-weight: bold;
-    min-height: 1.8em;
-    text-align: center;
-  }
-
   .baguette {
     position: relative;
-    width: 320px;
-    height: 160px;
+    width: 380px;
+    height: 330px;
     cursor: pointer;
     animation: float 3s ease-in-out infinite;
     filter: drop-shadow(0 16px 20px rgba(0,0,0,0.12));
@@ -50,13 +42,6 @@
   .baguette svg {
     width: 100%;
     height: 100%;
-  }
-
-  .counter {
-    font-size: 1.1rem;
-    color: #a08050;
-    letter-spacing: 1px;
-    opacity: 0.7;
   }
 
   /* Crumb particles */
@@ -80,6 +65,27 @@
     100% { transform: scale(1) rotate(0deg); }
   }
 
+  @keyframes flutter-left {
+    0%, 100% { transform: rotate(0deg); }
+    15% { transform: rotate(15deg); }
+    35% { transform: rotate(-12deg); }
+    55% { transform: rotate(10deg); }
+    75% { transform: rotate(-8deg); }
+    90% { transform: rotate(4deg); }
+  }
+
+  @keyframes flutter-right {
+    0%, 100% { transform: rotate(0deg); }
+    15% { transform: rotate(-15deg); }
+    35% { transform: rotate(12deg); }
+    55% { transform: rotate(-10deg); }
+    75% { transform: rotate(8deg); }
+    90% { transform: rotate(-4deg); }
+  }
+
+  .leg-flutter-left { animation: flutter-left 0.6s ease; }
+  .leg-flutter-right { animation: flutter-right 0.6s ease; }
+
   @keyframes crumb-fly {
     0%   { opacity: 1; transform: translate(0, 0) scale(1); }
     100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.2); }
@@ -89,122 +95,113 @@
 <body>
 
 <div class="scene">
-  <div class="message" id="message">click the baguette!</div>
-
   <div class="baguette" id="baguette">
-    <svg viewBox="0 0 340 180" xmlns="http://www.w3.org/2000/svg">
-      <!-- Shadow -->
-      <ellipse cx="170" cy="172" rx="120" ry="8" fill="rgba(0,0,0,0.06)"/>
+    <svg viewBox="0 0 380 330" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Flour speckle filter -->
+        <filter id="flour">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="2" result="noise"/>
+          <feColorMatrix type="matrix" in="noise" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.35 0" result="white-noise"/>
+          <feComposite in="white-noise" in2="SourceGraphic" operator="in"/>
+        </filter>
+      </defs>
 
-      <!-- Main baguette body — fat and round -->
-      <ellipse cx="170" cy="90" rx="155" ry="68" fill="#f0c56d" stroke="#c4943a" stroke-width="3"/>
+      <!-- Main bread body — oval boule -->
+      <ellipse cx="190" cy="145" rx="165" ry="105" fill="#e0a435" stroke="#b87a20" stroke-width="2.5"/>
 
-      <!-- Top crust highlight -->
-      <ellipse cx="170" cy="78" rx="130" ry="42" fill="#e8a840" opacity="0.6"/>
+      <!-- Upper crust (lighter golden top) -->
+      <ellipse cx="190" cy="125" rx="145" ry="82" fill="#edb94c"/>
 
-      <!-- Score lines (diagonal slashes on top) -->
-      <line x1="80" y1="60" x2="110" y2="85" stroke="#c4943a" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
-      <line x1="125" y1="52" x2="155" y2="77" stroke="#c4943a" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
-      <line x1="170" y1="48" x2="200" y2="73" stroke="#c4943a" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
-      <line x1="215" y1="52" x2="245" y2="77" stroke="#c4943a" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+      <!-- Top highlight (flour-dusted dome) -->
+      <ellipse cx="190" cy="105" rx="115" ry="58" fill="#f5d080" opacity="0.7"/>
 
-      <!-- Pointed ends -->
-      <ellipse cx="22" cy="95" rx="18" ry="28" fill="#e0b050" stroke="#c4943a" stroke-width="2.5" transform="rotate(-15, 22, 95)"/>
-      <ellipse cx="318" cy="95" rx="18" ry="28" fill="#e0b050" stroke="#c4943a" stroke-width="2.5" transform="rotate(15, 318, 95)"/>
+      <!-- Warm highlight on top -->
+      <ellipse cx="180" cy="90" rx="75" ry="35" fill="#f8dfa0" opacity="0.5"/>
 
-      <!-- Face -->
-      <!-- Eyes (normal) -->
-      <g id="eyes-normal">
-        <ellipse cx="140" cy="98" rx="9" ry="11" fill="#3a2a1a"/>
-        <ellipse cx="200" cy="98" rx="9" ry="11" fill="#3a2a1a"/>
-        <!-- Eye shine -->
-        <ellipse cx="136" cy="94" rx="4" ry="4" fill="white"/>
-        <ellipse cx="196" cy="94" rx="4" ry="4" fill="white"/>
+      <!-- Flour dusting -->
+      <ellipse cx="190" cy="110" rx="120" ry="62" fill="white" opacity="0.15" filter="url(#flour)"/>
+
+      <!-- Score mark 1 (left) -->
+      <path d="M115 75 Q120 130 125 190" stroke="#b87a20" stroke-width="2" fill="none" opacity="0.6"/>
+      <!-- Score opening 1 -->
+      <path d="M116 85 C112 112 112 152 122 182 C120 152 118 112 116 85Z" fill="#f5e4b8" stroke="#c48a28" stroke-width="1.5" opacity="0.9"/>
+      <path d="M116 90 C114 115 114 148 121 178" fill="none" stroke="#faf0d6" stroke-width="3" opacity="0.5"/>
+
+      <!-- Score mark 2 (center) -->
+      <path d="M185 62 Q188 125 190 195" stroke="#b87a20" stroke-width="2" fill="none" opacity="0.6"/>
+      <!-- Score opening 2 -->
+      <path d="M186 70 C180 108 180 155 188 190 C186 155 185 108 186 70Z" fill="#f5e4b8" stroke="#c48a28" stroke-width="1.5" opacity="0.9"/>
+      <path d="M186 75 C183 108 183 150 187 185" fill="none" stroke="#faf0d6" stroke-width="3" opacity="0.5"/>
+
+      <!-- Score mark 3 (right) -->
+      <path d="M255 75 Q260 130 260 190" stroke="#b87a20" stroke-width="2" fill="none" opacity="0.6"/>
+      <!-- Score opening 3 -->
+      <path d="M256 85 C262 112 262 152 260 182 C258 152 257 112 256 85Z" fill="#f5e4b8" stroke="#c48a28" stroke-width="1.5" opacity="0.9"/>
+      <path d="M257 90 C260 115 260 148 259 178" fill="none" stroke="#faf0d6" stroke-width="3" opacity="0.5"/>
+
+      <!-- Bottom edge (flat base where it sits) -->
+      <path d="M65 225 Q190 258 315 225" stroke="#b87a20" stroke-width="1.5" fill="none" opacity="0.3"/>
+
+      <!-- Legs -->
+      <g id="leg1" transform-origin="110 240">
+        <path d="M110 235 Q105 265 95 295" stroke="#c48a28" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <ellipse cx="93" cy="298" rx="8" ry="5" fill="#c48a28"/>
       </g>
-
-      <!-- Eyes (happy — hidden by default) -->
-      <g id="eyes-happy" style="display:none">
-        <path d="M128 102 Q140 92 152 102" stroke="#3a2a1a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-        <path d="M188 102 Q200 92 212 102" stroke="#3a2a1a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <g id="leg2" transform-origin="155 245">
+        <path d="M155 240 Q150 270 145 300" stroke="#c48a28" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <ellipse cx="143" cy="303" rx="8" ry="5" fill="#c48a28"/>
       </g>
-
-      <!-- Blush cheeks (hidden by default) -->
-      <g id="cheeks" style="display:none">
-        <ellipse cx="118" cy="112" rx="12" ry="8" fill="#f2a0a0" opacity="0.6"/>
-        <ellipse cx="222" cy="112" rx="12" ry="8" fill="#f2a0a0" opacity="0.6"/>
+      <g id="leg3" transform-origin="225 245">
+        <path d="M225 240 Q230 270 235 300" stroke="#c48a28" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <ellipse cx="237" cy="303" rx="8" ry="5" fill="#c48a28"/>
       </g>
-
-      <!-- Mouth (normal) -->
-      <path id="mouth-normal" d="M160 118 Q170 128 180 118" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
-
-      <!-- Mouth (open / happy — hidden by default) -->
-      <g id="mouth-happy" style="display:none">
-        <ellipse cx="170" cy="122" rx="14" ry="10" fill="#e85d5d" stroke="#3a2a1a" stroke-width="2.5"/>
-        <ellipse cx="170" cy="118" rx="14" ry="6" fill="#f0c56d"/>
+      <g id="leg4" transform-origin="270 240">
+        <path d="M270 235 Q275 265 285 295" stroke="#c48a28" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <ellipse cx="287" cy="298" rx="8" ry="5" fill="#c48a28"/>
       </g>
     </svg>
   </div>
 
-  <div class="counter" id="counter">clicks: 0</div>
 </div>
 
 <script>
-  let clicks = 0;
   const baguette = document.getElementById('baguette');
-  const counter = document.getElementById('counter');
-  const msg = document.getElementById('message');
-
-  const eyesNormal = document.getElementById('eyes-normal');
-  const eyesHappy = document.getElementById('eyes-happy');
-  const cheeks = document.getElementById('cheeks');
-  const mouthNormal = document.getElementById('mouth-normal');
-  const mouthHappy = document.getElementById('mouth-happy');
-
-  const messages = [
-    "yay!", "hehe~", "that tickles!", "oui oui!",
-    "i am baguette!", "hon hon hon!", ":D", "wheee!",
-    "so crusty~", "très magnifique!", "c'est moi!",
-    "i loaf you!", "oh my gluten!", "you're on a roll!",
-    "baguette about it!", "pain-fully cute!", "bonjour!"
+  const frogAudio = new Audio('um_hello.mp3');
+  const legs = [
+    document.getElementById('leg1'),
+    document.getElementById('leg2'),
+    document.getElementById('leg3'),
+    document.getElementById('leg4')
   ];
 
-  // Blink animation
-  let blinkInterval = setInterval(() => {
-    eyesNormal.style.display = 'none';
-    setTimeout(() => { eyesNormal.style.display = ''; }, 150);
-  }, 3500);
-
   baguette.addEventListener('click', (e) => {
-    clicks++;
-    counter.textContent = `clicks: ${clicks}`;
-
     // Bounce
     baguette.classList.remove('clicked');
     void baguette.offsetWidth;
     baguette.classList.add('clicked');
 
-    // Happy face
-    eyesNormal.style.display = 'none';
-    eyesHappy.style.display = '';
-    cheeks.style.display = '';
-    mouthNormal.style.display = 'none';
-    mouthHappy.style.display = '';
+    // Flutter legs
+    legs.forEach((leg, i) => {
+      const cls = i % 2 === 0 ? 'leg-flutter-left' : 'leg-flutter-right';
+      leg.classList.remove('leg-flutter-left', 'leg-flutter-right');
+      void leg.getBoundingClientRect();
+      leg.classList.add(cls);
+    });
 
-    // Message
-    msg.textContent = messages[Math.floor(Math.random() * messages.length)];
+    // Say "big bread" or sometimes play "um hello" mr frog audio
+    speechSynthesis.cancel();
+    if (Math.random() < 0.5) {
+      frogAudio.currentTime = 0;
+      frogAudio.play();
+    } else {
+      const utter = new SpeechSynthesisUtterance('big bread');
+      utter.rate = 1.1;
+      utter.pitch = 1.3;
+      speechSynthesis.speak(utter);
+    }
 
     // Crumbs
     for (let i = 0; i < 7; i++) spawnCrumb(e.clientX, e.clientY);
-
-    // Reset face
-    clearTimeout(baguette._resetTimer);
-    baguette._resetTimer = setTimeout(() => {
-      eyesNormal.style.display = '';
-      eyesHappy.style.display = 'none';
-      cheeks.style.display = 'none';
-      mouthNormal.style.display = '';
-      mouthHappy.style.display = 'none';
-    }, 700);
   });
 
   function spawnCrumb(x, y) {
