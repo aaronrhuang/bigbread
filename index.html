@@ -188,17 +188,9 @@
       leg.classList.add(cls);
     });
 
-    // Say "big bread" or sometimes play "um hello" mr frog audio
-    speechSynthesis.cancel();
-    if (Math.random() < 0.5) {
-      frogAudio.currentTime = 0;
-      frogAudio.play();
-    } else {
-      const utter = new SpeechSynthesisUtterance('big bread');
-      utter.rate = 1.1;
-      utter.pitch = 1.3;
-      speechSynthesis.speak(utter);
-    }
+    // Play "um hello" mr frog audio
+    frogAudio.currentTime = 0;
+    frogAudio.play();
 
     // Crumbs
     for (let i = 0; i < 7; i++) spawnCrumb(e.clientX, e.clientY);
