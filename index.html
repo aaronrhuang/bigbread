@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baguette Friend</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #fdf6e3;
+    font-family: 'Segoe UI', sans-serif;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .scene {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .message {
+    font-size: 1.6rem;
+    color: #c4943a;
+    font-weight: bold;
+    min-height: 1.8em;
+    text-align: center;
+  }
+
+  .baguette {
+    position: relative;
+    width: 320px;
+    height: 160px;
+    cursor: pointer;
+    animation: float 3s ease-in-out infinite;
+    filter: drop-shadow(0 16px 20px rgba(0,0,0,0.12));
+  }
+
+  .baguette:active { transform: scale(0.93); }
+  .baguette.clicked { animation: bounce 0.5s ease; }
+
+  /* Main baguette SVG */
+  .baguette svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .counter {
+    font-size: 1.1rem;
+    color: #a08050;
+    letter-spacing: 1px;
+    opacity: 0.7;
+  }
+
+  /* Crumb particles */
+  .crumb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: crumb-fly 0.8s ease-out forwards;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-14px) rotate(2deg); }
+  }
+
+  @keyframes bounce {
+    0%   { transform: scale(1) rotate(0deg); }
+    25%  { transform: scale(1.12) rotate(-4deg); }
+    50%  { transform: scale(0.94) rotate(3deg); }
+    75%  { transform: scale(1.04) rotate(-1deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+
+  @keyframes crumb-fly {
+    0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.2); }
+  }
+</style>
+</head>
+<body>
+
+<div class="scene">
+  <div class="message" id="message">click the baguette!</div>
+
+  <div class="baguette" id="baguette">
+    <svg viewBox="0 0 340 180" xmlns="http://www.w3.org/2000/svg">
+      <!-- Shadow -->
+      <ellipse cx="170" cy="172" rx="120" ry="8" fill="rgba(0,0,0,0.06)"/>
+
+      <!-- Main baguette body — fat and round -->
+      <ellipse cx="170" cy="90" rx="155" ry="68" fill="#f0c56d" stroke="#c4943a" stroke-width="3"/>
+
+      <!-- Top crust highlight -->
+      <ellipse cx="170" cy="78" rx="130" ry="42" fill="#e8a840" opacity="0.6"/>
+
+      <!-- Score lines (diagonal slashes on top) -->
+      <line x1="80" y1="60" x2="110" y2="85" stroke="#c4943a" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+      <line x1="125" y1="52" x2="155" y2="77" stroke="#c4943a" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+      <line x1="170" y1="48" x2="200" y2="73" stroke="#c4943a" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+      <line x1="215" y1="52" x2="245" y2="77" stroke="#c4943a" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+
+      <!-- Pointed ends -->
+      <ellipse cx="22" cy="95" rx="18" ry="28" fill="#e0b050" stroke="#c4943a" stroke-width="2.5" transform="rotate(-15, 22, 95)"/>
+      <ellipse cx="318" cy="95" rx="18" ry="28" fill="#e0b050" stroke="#c4943a" stroke-width="2.5" transform="rotate(15, 318, 95)"/>
+
+      <!-- Face -->
+      <!-- Eyes (normal) -->
+      <g id="eyes-normal">
+        <ellipse cx="140" cy="98" rx="9" ry="11" fill="#3a2a1a"/>
+        <ellipse cx="200" cy="98" rx="9" ry="11" fill="#3a2a1a"/>
+        <!-- Eye shine -->
+        <ellipse cx="136" cy="94" rx="4" ry="4" fill="white"/>
+        <ellipse cx="196" cy="94" rx="4" ry="4" fill="white"/>
+      </g>
+
+      <!-- Eyes (happy — hidden by default) -->
+      <g id="eyes-happy" style="display:none">
+        <path d="M128 102 Q140 92 152 102" stroke="#3a2a1a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M188 102 Q200 92 212 102" stroke="#3a2a1a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      </g>
+
+      <!-- Blush cheeks (hidden by default) -->
+      <g id="cheeks" style="display:none">
+        <ellipse cx="118" cy="112" rx="12" ry="8" fill="#f2a0a0" opacity="0.6"/>
+        <ellipse cx="222" cy="112" rx="12" ry="8" fill="#f2a0a0" opacity="0.6"/>
+      </g>
+
+      <!-- Mouth (normal) -->
+      <path id="mouth-normal" d="M160 118 Q170 128 180 118" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+      <!-- Mouth (open / happy — hidden by default) -->
+      <g id="mouth-happy" style="display:none">
+        <ellipse cx="170" cy="122" rx="14" ry="10" fill="#e85d5d" stroke="#3a2a1a" stroke-width="2.5"/>
+        <ellipse cx="170" cy="118" rx="14" ry="6" fill="#f0c56d"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="counter" id="counter">clicks: 0</div>
+</div>
+
+<script>
+  let clicks = 0;
+  const baguette = document.getElementById('baguette');
+  const counter = document.getElementById('counter');
+  const msg = document.getElementById('message');
+
+  const eyesNormal = document.getElementById('eyes-normal');
+  const eyesHappy = document.getElementById('eyes-happy');
+  const cheeks = document.getElementById('cheeks');
+  const mouthNormal = document.getElementById('mouth-normal');
+  const mouthHappy = document.getElementById('mouth-happy');
+
+  const messages = [
+    "yay!", "hehe~", "that tickles!", "oui oui!",
+    "i am baguette!", "hon hon hon!", ":D", "wheee!",
+    "so crusty~", "très magnifique!", "c'est moi!",
+    "i loaf you!", "oh my gluten!", "you're on a roll!",
+    "baguette about it!", "pain-fully cute!", "bonjour!"
+  ];
+
+  // Blink animation
+  let blinkInterval = setInterval(() => {
+    eyesNormal.style.display = 'none';
+    setTimeout(() => { eyesNormal.style.display = ''; }, 150);
+  }, 3500);
+
+  baguette.addEventListener('click', (e) => {
+    clicks++;
+    counter.textContent = `clicks: ${clicks}`;
+
+    // Bounce
+    baguette.classList.remove('clicked');
+    void baguette.offsetWidth;
+    baguette.classList.add('clicked');
+
+    // Happy face
+    eyesNormal.style.display = 'none';
+    eyesHappy.style.display = '';
+    cheeks.style.display = '';
+    mouthNormal.style.display = 'none';
+    mouthHappy.style.display = '';
+
+    // Message
+    msg.textContent = messages[Math.floor(Math.random() * messages.length)];
+
+    // Crumbs
+    for (let i = 0; i < 7; i++) spawnCrumb(e.clientX, e.clientY);
+
+    // Reset face
+    clearTimeout(baguette._resetTimer);
+    baguette._resetTimer = setTimeout(() => {
+      eyesNormal.style.display = '';
+      eyesHappy.style.display = 'none';
+      cheeks.style.display = 'none';
+      mouthNormal.style.display = '';
+      mouthHappy.style.display = 'none';
+    }, 700);
+  });
+
+  function spawnCrumb(x, y) {
+    const c = document.createElement('div');
+    c.classList.add('crumb');
+    const size = 4 + Math.random() * 7;
+    const colors = ['#f0c56d', '#e8a840', '#d4952e', '#f5d78e'];
+    c.style.width = size + 'px';
+    c.style.height = size + 'px';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.left = x + 'px';
+    c.style.top = y + 'px';
+    c.style.setProperty('--dx', (Math.random() - 0.5) * 140 + 'px');
+    c.style.setProperty('--dy', (Math.random() - 0.7) * 120 + 'px');
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 800);
+  }
+</script>
+
+</body>
+</html>
